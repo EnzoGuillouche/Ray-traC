@@ -174,8 +174,8 @@ void DrawLight()
             {
                 // can display a Line, but the end would be the edge of the circle
                 Vector2 newEnd = {
-                    lightEntity->x + cosf(angle)*400,
-                    lightEntity->y + sinf(angle)*400
+                    lightEntity->x + cosf(angle)*sqrt(pow(lightEntity->x - entities[j].x, 2)+pow(lightEntity->y - entities[j].y, 2)),
+                    lightEntity->y + sinf(angle)*sqrt(pow(lightEntity->x - entities[j].x, 2)+pow(lightEntity->y - entities[j].y, 2))
                 };
 
                 DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
