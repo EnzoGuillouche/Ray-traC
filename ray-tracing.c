@@ -1,9 +1,12 @@
 #include "raylib.h"
+#include <math.h>
 
 #define WIDTH 800
 #define HEIGHT 450
 
 #define NUM_ENTITIES 2
+#define RAY_COUNT 500
+#define MAX_RAY_LENGTH 2000
 
 typedef struct Entity {
     int x, y;
@@ -33,15 +36,44 @@ void DrawEntities()
     }
 }
 
+void DrawLight()
+{
+    Entity *lightEntity = 0;
+    // identify light source
+    for (int i = 0; i < NUM_ENTITIES; i++)
+    {
+        if (entities[i].isEmmiter)
+        {
+            lightEntity = &entities[i];
+            break;
+        }
+    }
+
+    // draw rays
+    for (int i = 0; i < RAY_COUNT; i++)
+    {
+        float angle = (2.0f * PI / RAY_COUNT) * i;
+
+        Vector2 end = {
+            lightEntity->x + cosf(angle) * MAX_RAY_LENGTH,
+            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH
+        };
+
+        DrawLineV({ lightEntity->x, lightEntity->y }, end, Fade(lightEntity->color, 0.5f));
+    }
+}
+
 int main(void)
 {
     InitWindow(WIDTH, HEIGHT, "Ray Tracing in C");
     InitEntities();
 
+    SetTargetFPS(60);
     while (!WindowShouldClose())
     {
         BeginDrawing();
             ClearBackground(BLACK);
+            DrawLight();
             DrawEntities();
         EndDrawing();
     }
