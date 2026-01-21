@@ -5,6 +5,8 @@ I got insomnia again, so i decided to explore something I really wanted to dive 
 The program generates 2 (can generate more, haven't tested though) entites, with at least 1 as a light source.
 The program will compute every mathematical nightmare embedded in itself to simulate graphically light and shadow (basic ray-tracing).
 
+Tested en MacOS.
+
 ## Screenshots
 <img width="1000" src="https://github.com/user-attachments/assets/f4125397-8065-4400-adac-9aff064b14d4" />
 
