@@ -8,6 +8,8 @@ The program will compute every mathematical nightmare embedded in itself to simu
 ## Screenshots
 <img width="1000" src="https://github.com/user-attachments/assets/f4125397-8065-4400-adac-9aff064b14d4" />
 
-<img width="1000" src="https://github.com/user-attachments/assets/18ffd7de-1f90-4b39-a8f3-7a21ba58436c" />
+<img width="1000" src="https://github.com/user-attachments/assets/7ef1692e-b74d-4800-95b2-b0aae88eab6b" />
 
-<img width="1000" src="https://github.com/user-attachments/assets/3e24236d-08a9-42a5-966d-e47c32837d94" />
+<img width="1000" src="https://github.com/user-attachments/assets/fe15b074-267a-4077-8678-be0a494868e3" />
+
+<img width="1185" height="821" alt="Screenshot 2026-01-21 at 19 15 02" src="https://github.com/user-attachments/assets/3bf4660d-c1e4-4366-8921-5a1136786c54" />
