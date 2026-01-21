@@ -110,19 +110,15 @@ void ComputeTangents(double px, double py, double cx, double cy, double r)
 
         // Tangent 1
         lambda1 = (m1 * (px - cx) + (cy - py)) / (m1 * m1 + 1);
-        
+
         tangents[0].x = cx + m1 * lambda1;
         tangents[0].y = cy - lambda1;
 
-        printf("Tangent intersection 1: (%.2f, %.2f)\n", tangents[0].x, tangents[0].y);
-
         // Tangent 2
         lambda2 = (m2 * (px - cx) + (cy - py)) / (m2 * m2 + 1);
-        
+
         tangents[1].x = cx + m2 * lambda2;
         tangents[1].y = cy - lambda2;
-
-        printf("Tangent intersection 2: (%.2f, %.2f)\n", tangents[1].x, tangents[1].y);
     }
 }
 
@@ -142,9 +138,11 @@ void DrawLight()
     // draw rays
     bool shouldDrawRay = true;
     float angle = 0.0f;
+    double angleToTangent1, angleToTangent2, angleRay;
     for (int i = 0; i < RAY_COUNT; i++)
     {
         angle = (2.0f * PI / RAY_COUNT) * i;
+        shouldDrawRay = true;
 
         Vector2 end = {
             lightEntity->x + cosf(angle) * MAX_RAY_LENGTH,
@@ -158,11 +156,34 @@ void DrawLight()
 
             ComputeTangents(lightEntity->x, lightEntity->y, entities[j].x, entities[j].y, entities[j].radius);
 
+            angleToTangent1 = atan2(tangents[0].y - lightEntity->y, tangents[0].x - lightEntity->x);
+            angleToTangent2 = atan2(tangents[1].y - lightEntity->y, tangents[1].x - lightEntity->x);
+            angleRay = atan2(end.y - lightEntity->y, end.x - lightEntity->x);
+
+            printf("Angle to Tangent 1: %d\n", angleToTangent1);
+            printf("Angle to Tangent 2: %d\n", angleToTangent2);
+            printf("Angle of Ray: %d\n", angleRay);
+
+            // Ensure tangent angles are sorted
+            if (angleToTangent1 > angleToTangent2)
+            {
+                double temp = angleToTangent1;
+                angleToTangent1 = angleToTangent2;
+                angleToTangent2 = temp;
+            }
+
+            // If ray angle is between tangent angles, skip it
+            if (angleRay > angleToTangent1 && angleRay < angleToTangent2)
+            {
+                // can display a Line, but the end would be the edge of the circle
+                shouldDrawRay = false;
+            }
         }
 
-        if (!shouldDrawRay)
-            continue;
-        DrawLineV((Vector2){lightEntity->x, lightEntity->y}, end, Fade(lightEntity->color, 0.5f));
+        if (shouldDrawRay)
+        {
+            DrawLineV((Vector2){lightEntity->x, lightEntity->y}, end, Fade(lightEntity->color, 0.5f));
+        }
     }
 }
 
