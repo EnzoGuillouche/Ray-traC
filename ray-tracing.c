@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <math.h>
+#include <stdio.h>
 
 #define WIDTH 800
 #define HEIGHT 450
@@ -8,7 +9,8 @@
 #define RAY_COUNT 500
 #define MAX_RAY_LENGTH 2000
 
-typedef struct Entity {
+typedef struct Entity
+{
     int x, y;
     int radius;
     Color color;
@@ -17,15 +19,15 @@ typedef struct Entity {
 
 Entity entities[NUM_ENTITIES];
 
+Vector2 tangents[2]; // used to store tangent points for each obstacle
+
 void InitEntities()
 {
-    entities[0] = (Entity) { 
-        200, 200, 50, RED, true
-    };
+    entities[0] = (Entity){
+        200, 200, 50, RED, true};
 
-    entities[1] = (Entity) { 
-        600, 200, 75, BLUE, false
-    };
+    entities[1] = (Entity){
+        600, 200, 75, BLUE, false};
 }
 
 void DrawEntities()
@@ -33,6 +35,94 @@ void DrawEntities()
     for (int i = 0; i < NUM_ENTITIES; i++)
     {
         DrawCircle(entities[i].x, entities[i].y, entities[i].radius, entities[i].color);
+    }
+}
+
+double A, B, C, discriminant, sqrtD, m1, m2, lambda1, lambda2;
+
+void ComputeTangents(double px, double py, double cx, double cy, double r)
+{
+    /*
+        any line going through this the emmision point can be written :
+        entities[j].y - emmisionPoint.y = m(entities[j].x - emmisionPoint.x)
+        entities[j].y = m(entities[j].x - emmisionPoint.x) + emmisionPoint.y
+        m(entities[j].x - emmisionPoint.x) + emmisionPoint.y - entities[j].y = 0
+        m*entities[j].x - m*emmisionPoint.x + emmisionPoint.y - entities[j].y = 0
+
+        General line equation: A*x + B*y + C = 0, so:
+        A = m, B = -1, C = emmisionPoint.y - entities[j].y
+
+        A line is tangent to a circle if the distance between the center of the circle and the line is equal to the radius.
+        so distance({ entities[j].x, entities[j].y }, line) = entities[j].radius
+        d = |A*x0 + B*y0 + C| / sqrt(A^2 + B^2)
+        d = |m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y| / sqrt(m^2 + 1)
+
+        d = entities[j].radius, so:
+        entities[j].radius = |m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y| / sqrt(m^2 + 1)
+        entities[j].radius^2 = (m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y)^2 / (m^2 + 1)
+        entities[j].radius^2 * (m^2 + 1) = (m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y)^2
+        entities[j].radius^2 * m^2 + entities[j].radius^2 = (m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y)^2
+        entities[j].radius^2 * m^2 + entities[j].radius^2 = entities[j].x^2 * m^2 - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2
+        entities[j].radius^2 * m^2 = entities[j].x^2 * m^2 - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2 - entities[j].radius^2
+        entities[j].radius^2 * m^2 - entities[j].x^2 * m^2 = - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2 - entities[j].radius^2
+        m^2(entities[j].radius^2 - entities[j].x^2) = - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2 - entities[j].radius^2
+
+        Finally we have:
+        m = ± sqrt( (emmisionPoint.y^2 - 2*entities[j].y - entities[j].radius^2) / (entities[j].radius^2 - entities[j].x^2) )
+
+        now that we have m we can calculate the intersection point of the ray on the circle.
+        so we go back to
+
+        Circle equation:
+        (x - entities[j].x)^2 + (y - entities[j].y)^2 = entities[j].radius^2
+
+        and we replace y by the Tangent line equation:
+        y = m(x - emmisionPoint.x) + emmisionPoint.y
+
+        so we got this:
+        (x - entities[j].x)^2 + ( m(x - emmisionPoint.x) + emmisionPoint.y - entities[j].y)^2 = entities[j].radius^2
+        that we can develop to get x
+
+        x = -(-2 * entities[j].x - 2 * m^2 * emmisionPoint.x + 2 * m * (emmisionPoint.y - entities[j].y)) / (2 * (1 + m^2))
+
+        once we have x we can get y by replacing it in the line equation:
+        y = m(x - emmisionPoint.x) + emmisionPoint.y
+    */
+
+    // Quadratic coefficients for slope m
+    A = (cx - px) * (cx - px) - r * r;
+    B = 2 * (cx - px) * (py - cy);
+    C = (py - cy) * (py - cy) - r * r;
+
+    discriminant = B * B - 4 * A * C;
+
+    if (discriminant < 0)
+    {
+        printf("No tangents (point inside circle)\n");
+    }
+    else
+    {
+        sqrtD = sqrt(discriminant);
+
+        // Two slopes
+        m1 = (-B + sqrtD) / (2 * A);
+        m2 = (-B - sqrtD) / (2 * A);
+
+        // Tangent 1
+        lambda1 = (m1 * (px - cx) + (cy - py)) / (m1 * m1 + 1);
+        
+        tangents[0].x = cx + m1 * lambda1;
+        tangents[0].y = cy - lambda1;
+
+        printf("Tangent intersection 1: (%.2f, %.2f)\n", tangents[0].x, tangents[0].y);
+
+        // Tangent 2
+        lambda2 = (m2 * (px - cx) + (cy - py)) / (m2 * m2 + 1);
+        
+        tangents[1].x = cx + m2 * lambda2;
+        tangents[1].y = cy - lambda2;
+
+        printf("Tangent intersection 2: (%.2f, %.2f)\n", tangents[1].x, tangents[1].y);
     }
 }
 
@@ -50,70 +140,29 @@ void DrawLight()
     }
 
     // draw rays
+    bool shouldDrawRay = true;
+    float angle = 0.0f;
     for (int i = 0; i < RAY_COUNT; i++)
     {
-        float angle = (2.0f * PI / RAY_COUNT) * i;
+        angle = (2.0f * PI / RAY_COUNT) * i;
 
         Vector2 end = {
             lightEntity->x + cosf(angle) * MAX_RAY_LENGTH,
-            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH
-        };
+            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH};
 
         // calculate tangent lines of possibles obstacles
         for (int j = 0; j < NUM_ENTITIES; j++)
         {
-            if (&entities[j] == lightEntity) continue;
+            if (&entities[j] == lightEntity)
+                continue;
 
-            Vector2 emmisionPoint = { lightEntity->x, lightEntity->y };
+            ComputeTangents(lightEntity->x, lightEntity->y, entities[j].x, entities[j].y, entities[j].radius);
 
-            /*
-                any line going through this the emmision point can be written :
-                entities[j].y - emmisionPoint.y = m(entities[j].x - emmisionPoint.x)
-                entities[j].y = m(entities[j].x - emmisionPoint.x) + emmisionPoint.y
-                m(entities[j].x - emmisionPoint.x) + emmisionPoint.y - entities[j].y = 0
-                m*entities[j].x - m*emmisionPoint.x + emmisionPoint.y - entities[j].y = 0
-
-                General line equation: A*x + B*y + C = 0, so:
-                A = m, B = -1, C = emmisionPoint.y - entities[j].y
-
-                A line is tangent to a circle if the distance between the center of the circle and the line is equal to the radius.
-                so distance({ entities[j].x, entities[j].y }, line) = entities[j].radius
-                d = |A*x0 + B*y0 + C| / sqrt(A^2 + B^2)
-                d = |m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y| / sqrt(m^2 + 1)
-
-                d = entities[j].radius, so:
-                entities[j].radius = |m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y| / sqrt(m^2 + 1)
-                entities[j].radius^2 = (m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y)^2 / (m^2 + 1)
-                entities[j].radius^2 * (m^2 + 1) = (m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y)^2
-                entities[j].radius^2 * m^2 + entities[j].radius^2 = (m*entities[j].x - entities[j].y + emmisionPoint.y - entities[j].y)^2
-                entities[j].radius^2 * m^2 + entities[j].radius^2 = entities[j].x^2 * m^2 - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2
-                entities[j].radius^2 * m^2 = entities[j].x^2 * m^2 - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2 - entities[j].radius^2
-                entities[j].radius^2 * m^2 - entities[j].x^2 * m^2 = - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2 - entities[j].radius^2
-                m^2(entities[j].radius^2 - entities[j].x^2) = - entities[j].y^2 + emmisionPoint.y^2 - entities[j].y^2 - entities[j].radius^2
-                
-                Finally we have:
-                m = ± sqrt( (emmisionPoint.y^2 - 2*entities[j].y - entities[j].radius^2) / (entities[j].radius^2 - entities[j].x^2) )
-
-                now that we have m we can calculate the intersection point of the ray on the circle.
-                so we go back to
-
-                Circle equation:
-                (x - entities[j].x)^2 + (y - entities[j].y)^2 = entities[j].radius^2
-
-                and we replace y by the Tangent line equation:
-                y = m(x - emmisionPoint.x) + emmisionPoint.y
-
-                so we got this:
-                (x - entities[j].x)^2 + ( m(x - emmisionPoint.x) + emmisionPoint.y - entities[j].y)^2 = entities[j].radius^2
-                that we can develop to get x
-
-
-                once we have x we can get y by replacing it in the line equation:
-                y = m(x - emmisionPoint.x) + emmisionPoint.y
-            */
-
-            DrawLineV((Vector2){ lightEntity->x, lightEntity->y }, end, Fade(lightEntity->color, 0.5f));
         }
+
+        if (!shouldDrawRay)
+            continue;
+        DrawLineV((Vector2){lightEntity->x, lightEntity->y}, end, Fade(lightEntity->color, 0.5f));
     }
 }
 
@@ -126,9 +175,9 @@ int main(void)
     while (!WindowShouldClose())
     {
         BeginDrawing();
-            ClearBackground(BLACK);
-            DrawLight();
-            DrawEntities();
+        ClearBackground(BLACK);
+        DrawLight();
+        DrawEntities();
         EndDrawing();
     }
 
