@@ -20,7 +20,15 @@ Tested en MacOS.
 
 ## Build
 
+You'll need the [Raylib library](https://github.com/raysan5/raylib/).
 You can build the project with this command: 
-```c
-gcc ray-tracing.c -I/opt/homebrew/opt/raylib/include -L/opt/homebrew/lib -std=c17 -Wall -Wextra -o ray-tracing -lraylib -framework  OpenGL -framework  Cocoa -framework  IOKit -framework CoreVideo
+
+Mac
+```bash
+gcc ray-tracing.c -I/opt/homebrew/opt/raylib/include -L/opt/homebrew/lib -o ray-tracing -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+```
+
+Linux
+```bash
+gcc ray-tracing.c -o ray-tracing -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 ```
