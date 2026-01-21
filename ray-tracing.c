@@ -7,7 +7,7 @@
 #define WIDTH 1200
 #define HEIGHT 800
 
-#define NUM_ENTITIES 2
+#define NUM_ENTITIES 5
 #define RAY_COUNT 500
 #define MAX_RAY_LENGTH 3000
 #define MIN_RADIUS 25
@@ -36,7 +36,7 @@ void InitEntities()
         entities[i].color = (Color){rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1, 255};
         entities[i].isEmmiter = i == 0 ? 1 : (rand() % 2 + 1) - 1;
 
-        printf("Entity set at x %d, y %d, radius %d, light source %d\n", entities[i].x, entities[i].y, entities[i].radius, entities[i].color, entities[i].isEmmiter);
+        printf("Entity set at x %d, y %d, radius %d, light source %d\n", entities[i].x, entities[i].y, entities[i].radius, entities[i].isEmmiter);
     }
 }
 
@@ -151,8 +151,8 @@ void DrawLight()
     double angleToTangent1, angleToTangent2, angleRay;
     for (int i = 0; i < RAY_COUNT; i++)
     {
-        angle = (2.0f * PI / RAY_COUNT) * i;
         shouldDrawRay = true;
+        angle = (2.0f * PI / RAY_COUNT) * i;
 
         Vector2 end = {
             lightEntity->x + cosf(angle) * MAX_RAY_LENGTH,
@@ -184,10 +184,12 @@ void DrawLight()
                 // can display a Line, but the end would be the edge of the circle
                 Vector2 newEnd = {
                     lightEntity->x + cosf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2)),
-                    lightEntity->y + sinf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2))};
-
+                    lightEntity->y + sinf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2))
+                };
+                
                 DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
                 shouldDrawRay = false;
+                break;
             }
         }
 
@@ -208,9 +210,9 @@ int main(void)
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(BLACK);
-        DrawLight();
-        DrawEntities();
+            ClearBackground(BLACK);
+            DrawLight();
+            DrawEntities();
         EndDrawing();
     }
 
