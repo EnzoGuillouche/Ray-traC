@@ -24,7 +24,7 @@ Vector2 tangents[2]; // used to store tangent points for each obstacle
 void InitEntities()
 {
     entities[0] = (Entity){
-        200, 200, 50, RED, true};
+        200, 0, 50, RED, true};
 
     entities[1] = (Entity){
         600, 200, 75, BLUE, false};
@@ -161,10 +161,6 @@ void DrawLight()
             angleToTangent2 = atan2(tangents[1].y - lightEntity->y, tangents[1].x - lightEntity->x);
             angleRay = atan2(end.y - lightEntity->y, end.x - lightEntity->x);
 
-            printf("Angle to Tangent 1: %d\n", angleToTangent1);
-            printf("Angle to Tangent 2: %d\n", angleToTangent2);
-            printf("Angle of Ray: %d\n", angleRay);
-
             // Ensure tangent angles are sorted
             if (angleToTangent1 > angleToTangent2)
             {
@@ -178,11 +174,10 @@ void DrawLight()
             {
                 // can display a Line, but the end would be the edge of the circle
                 Vector2 newEnd = {
-                    sqrt(pow(lightEntity->x + cosf(angle) * (lightEntity->x - entities[j].x - (lightEntity->radius - entities[j].radius)*-15), 2)),
-                    sqrt(pow(lightEntity->y + sinf(angle) * (lightEntity->y - entities[j].y - (lightEntity->radius - entities[j].radius)*-15), 2))
+                    lightEntity->x + cosf(angle)*400,
+                    lightEntity->y + sinf(angle)*400
                 };
 
-                printf("new end: %d, %d\n", newEnd.x, newEnd.y);
                 DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
                 shouldDrawRay = false;
             }
@@ -207,6 +202,7 @@ int main(void)
         ClearBackground(BLACK);
         DrawLight();
         DrawEntities();
+        entities[0].y++;
         EndDrawing();
     }
 
