@@ -35,6 +35,8 @@ void InitEntities()
         entities[i].y = rand() % (HEIGHT - entities[i].radius - entities[i].radius + 1) + entities[i].radius;
         entities[i].color = (Color){rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1, 255};
         entities[i].isEmmiter = i == 0 ? 1 : (rand() % 2 + 1) - 1;
+
+        printf("Entity set at x %d, y %d, radius %d, light source %d\n", entities[i].x, entities[i].y, entities[i].radius, entities[i].color, entities[i].isEmmiter);
     }
 }
 
