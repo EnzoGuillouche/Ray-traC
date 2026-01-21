@@ -1,13 +1,17 @@
 #include "raylib.h"
 #include <math.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
-#define WIDTH 800
-#define HEIGHT 450
+#define WIDTH 1200
+#define HEIGHT 800
 
 #define NUM_ENTITIES 2
 #define RAY_COUNT 500
-#define MAX_RAY_LENGTH 2000
+#define MAX_RAY_LENGTH 3000
+#define MIN_RADIUS 25
+#define MAX_RADIUS 75
 
 typedef struct Entity
 {
@@ -23,11 +27,15 @@ Vector2 tangents[2]; // used to store tangent points for each obstacle
 
 void InitEntities()
 {
-    entities[0] = (Entity){
-        200, 0, 50, RED, true};
+    for (int i = 0; i < NUM_ENTITIES; i++)
+    {
+        entities[i].radius = rand() % (MAX_RADIUS - MIN_RADIUS + 1) + MIN_RADIUS;
 
-    entities[1] = (Entity){
-        600, 200, 75, BLUE, false};
+        entities[i].x = rand() % (WIDTH - entities[i].radius - entities[i].radius + 1) + entities[i].radius;
+        entities[i].y = rand() % (HEIGHT - entities[i].radius - entities[i].radius + 1) + entities[i].radius;
+        entities[i].color = (Color){rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1, 255};
+        entities[i].isEmmiter = i == 0 ? 1 : (rand() % 2 + 1) - 1;
+    }
 }
 
 void DrawEntities()
@@ -146,8 +154,7 @@ void DrawLight()
 
         Vector2 end = {
             lightEntity->x + cosf(angle) * MAX_RAY_LENGTH,
-            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH
-        };
+            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH};
 
         // calculate tangent lines of possibles obstacles
         for (int j = 0; j < NUM_ENTITIES; j++)
@@ -174,9 +181,8 @@ void DrawLight()
             {
                 // can display a Line, but the end would be the edge of the circle
                 Vector2 newEnd = {
-                    lightEntity->x + cosf(angle)*sqrt(pow(lightEntity->x - entities[j].x, 2)+pow(lightEntity->y - entities[j].y, 2)),
-                    lightEntity->y + sinf(angle)*sqrt(pow(lightEntity->x - entities[j].x, 2)+pow(lightEntity->y - entities[j].y, 2))
-                };
+                    lightEntity->x + cosf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2)),
+                    lightEntity->y + sinf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2))};
 
                 DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
                 shouldDrawRay = false;
@@ -192,6 +198,7 @@ void DrawLight()
 
 int main(void)
 {
+    srand(time(NULL));
     InitWindow(WIDTH, HEIGHT, "Ray Tracing in C");
     InitEntities();
 
@@ -202,7 +209,6 @@ int main(void)
         ClearBackground(BLACK);
         DrawLight();
         DrawEntities();
-        entities[0].y++;
         EndDrawing();
     }
 
