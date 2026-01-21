@@ -12,4 +12,4 @@ The program will compute every mathematical nightmare embedded in itself to simu
 
 <img width="1000" src="https://github.com/user-attachments/assets/fe15b074-267a-4077-8678-be0a494868e3" />
 
-<img width="1185" height="821" alt="Screenshot 2026-01-21 at 19 15 02" src="https://github.com/user-attachments/assets/3bf4660d-c1e4-4366-8921-5a1136786c54" />
+<img width="1000" src="https://github.com/user-attachments/assets/3bf4660d-c1e4-4366-8921-5a1136786c54" />
