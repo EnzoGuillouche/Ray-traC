@@ -146,7 +146,8 @@ void DrawLight()
 
         Vector2 end = {
             lightEntity->x + cosf(angle) * MAX_RAY_LENGTH,
-            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH};
+            lightEntity->y + sinf(angle) * MAX_RAY_LENGTH
+        };
 
         // calculate tangent lines of possibles obstacles
         for (int j = 0; j < NUM_ENTITIES; j++)
@@ -176,6 +177,13 @@ void DrawLight()
             if (angleRay > angleToTangent1 && angleRay < angleToTangent2)
             {
                 // can display a Line, but the end would be the edge of the circle
+                Vector2 newEnd = {
+                    sqrt(pow(lightEntity->x + cosf(angle) * (lightEntity->x - entities[j].x - (lightEntity->radius - entities[j].radius)*-15), 2)),
+                    sqrt(pow(lightEntity->y + sinf(angle) * (lightEntity->y - entities[j].y - (lightEntity->radius - entities[j].radius)*-15), 2))
+                };
+
+                printf("new end: %d, %d\n", newEnd.x, newEnd.y);
+                DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
                 shouldDrawRay = false;
             }
         }
