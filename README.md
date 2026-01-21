@@ -13,3 +13,12 @@ The program will compute every mathematical nightmare embedded in itself to simu
 <img width="1000" src="https://github.com/user-attachments/assets/fe15b074-267a-4077-8678-be0a494868e3" />
 
 <img width="1000" src="https://github.com/user-attachments/assets/3bf4660d-c1e4-4366-8921-5a1136786c54" />
+
+(i'm not showing it, but there are sometimes some weird bugs, don't tell anyone)
+
+## Build
+
+You can build the project with this command: 
+```c
+gcc ray-tracing.c -I/opt/homebrew/opt/raylib/include -L/opt/homebrew/lib -std=c17 -Wall -Wextra -o ray-tracing -lraylib -framework  OpenGL -framework  Cocoa -framework  IOKit -framework CoreVideo
+```
