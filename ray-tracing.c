@@ -7,8 +7,8 @@
 #define WIDTH 1200
 #define HEIGHT 800
 
-#define NUM_ENTITIES 2
-#define RAY_COUNT 3000
+#define NUM_ENTITIES 3
+#define RAY_COUNT 5000
 #define MAX_RAY_LENGTH 3000
 #define MIN_RADIUS 25
 #define MAX_RADIUS 75
@@ -180,7 +180,6 @@ void DrawLight()
 
 
             bool thisBugIsPissingMeOff = lightEntity->x > entities[j].x + entities[j].radius && (lightEntity->y > entities[j].y - entities[j].radius && lightEntity->y < entities[j].y + entities[j].radius);
-            printf("%d\n", thisBugIsPissingMeOff);
 
             // If ray angle is between tangent angles, skip it
             if (angleRay > angleToTangent1 && angleRay < angleToTangent2 && !thisBugIsPissingMeOff)
