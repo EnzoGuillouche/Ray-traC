@@ -7,8 +7,8 @@
 #define WIDTH 1200
 #define HEIGHT 800
 
-#define NUM_ENTITIES 5
-#define RAY_COUNT 2000
+#define NUM_ENTITIES 2
+#define RAY_COUNT 3000
 #define MAX_RAY_LENGTH 3000
 #define MIN_RADIUS 25
 #define MAX_RADIUS 75
@@ -178,18 +178,36 @@ void DrawLight()
                 angleToTangent2 = temp;
             }
 
+
+            bool thisBugIsPissingMeOff = lightEntity->x > entities[j].x + entities[j].radius && (lightEntity->y > entities[j].y - entities[j].radius && lightEntity->y < entities[j].y + entities[j].radius);
+            printf("%d\n", thisBugIsPissingMeOff);
+
             // If ray angle is between tangent angles, skip it
-            if (angleRay > angleToTangent1 && angleRay < angleToTangent2)
+            if (angleRay > angleToTangent1 && angleRay < angleToTangent2 && !thisBugIsPissingMeOff)
             {
                 // can display a Line, but the end would be the edge of the circle
                 Vector2 newEnd = {
                     lightEntity->x + cosf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2)),
-                    lightEntity->y + sinf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2))
-                };
-                
+                    lightEntity->y + sinf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2))};
+
                 DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
                 shouldDrawRay = false;
                 break;
+            }
+
+            if (angleRay > angleToTangent1 && angleRay < angleToTangent2 && thisBugIsPissingMeOff)
+            {
+                shouldDrawRay = true;
+            }
+            else if (thisBugIsPissingMeOff)
+            {
+                // can display a Line, but the end would be the edge of the circle
+                Vector2 newEnd = {
+                    lightEntity->x + cosf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2)),
+                    lightEntity->y + sinf(angle) * sqrt(pow(lightEntity->x - entities[j].x, 2) + pow(lightEntity->y - entities[j].y, 2))};
+
+                DrawLineV((Vector2){lightEntity->x, lightEntity->y}, newEnd, Fade(lightEntity->color, 0.5f));
+                shouldDrawRay = false;
             }
         }
 
@@ -211,11 +229,11 @@ int main(void)
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && ((GetMousePosition().x > entities[0].x-entities[0].radius && GetMousePosition().x < entities[0].x+entities[0].radius) && (GetMousePosition().y > entities[0].y-entities[0].radius && GetMousePosition().y < entities[0].y+entities[0].radius)))
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && ((GetMousePosition().x > entities[0].x - entities[0].radius && GetMousePosition().x < entities[0].x + entities[0].radius) && (GetMousePosition().y > entities[0].y - entities[0].radius && GetMousePosition().y < entities[0].y + entities[0].radius)))
         {
             isDragging = !isDragging;
         }
-        
+
         if (isDragging)
         {
             entities[0].x = GetMousePosition().x;
@@ -223,9 +241,9 @@ int main(void)
         }
 
         BeginDrawing();
-            ClearBackground(BLACK);
-            DrawLight();
-            DrawEntities();
+        ClearBackground(BLACK);
+        DrawLight();
+        DrawEntities();
         EndDrawing();
     }
 
