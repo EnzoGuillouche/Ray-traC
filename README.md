@@ -4,6 +4,7 @@ I got insomnia again, so i decided to explore something I really wanted to dive 
 
 The program generates 2 (can generate more, haven't tested though) entites, with at least 1 as a light source.
 The program will compute every mathematical nightmare embedded in itself to simulate graphically light and shadow (basic ray-tracing).
+You can click on the light source to grab it, drag it, and then click again to release it. (there are sometimes some weird bugs, don't tell anyone pls)
 
 Tested en MacOS.
 
@@ -15,8 +16,6 @@ Tested en MacOS.
 <img width="1121" src="https://github.com/user-attachments/assets/c9846815-ab0a-4661-a0e2-f37c345dbca5" />
 
 <img width="1000" src="https://github.com/user-attachments/assets/3bf4660d-c1e4-4366-8921-5a1136786c54" />
-
-(i'm not showing it, but there are sometimes some weird bugs, don't tell anyone)
 
 ## Build
 
