@@ -10,9 +10,9 @@ Tested en MacOS.
 ## Screenshots
 <img width="1000" src="https://github.com/user-attachments/assets/f4125397-8065-4400-adac-9aff064b14d4" />
 
-<img width="1000" src="https://github.com/user-attachments/assets/7ef1692e-b74d-4800-95b2-b0aae88eab6b" />
+<img width="1191" src="https://github.com/user-attachments/assets/9009d7d3-3328-42f2-8f31-33c4429a3d26" />
 
-<img width="1000" src="https://github.com/user-attachments/assets/fe15b074-267a-4077-8678-be0a494868e3" />
+<img width="1121" src="https://github.com/user-attachments/assets/c9846815-ab0a-4661-a0e2-f37c345dbca5" />
 
 <img width="1000" src="https://github.com/user-attachments/assets/3bf4660d-c1e4-4366-8921-5a1136786c54" />
 
