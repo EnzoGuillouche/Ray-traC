@@ -8,7 +8,7 @@
 #define HEIGHT 800
 
 #define NUM_ENTITIES 5
-#define RAY_COUNT 500
+#define RAY_COUNT 2000
 #define MAX_RAY_LENGTH 3000
 #define MIN_RADIUS 25
 #define MAX_RADIUS 75
@@ -206,9 +206,22 @@ int main(void)
     InitWindow(WIDTH, HEIGHT, "Ray Tracing in C");
     InitEntities();
 
+    bool isDragging = false;
+
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && ((GetMousePosition().x > entities[0].x-entities[0].radius && GetMousePosition().x < entities[0].x+entities[0].radius) && (GetMousePosition().y > entities[0].y-entities[0].radius && GetMousePosition().y < entities[0].y+entities[0].radius)))
+        {
+            isDragging = !isDragging;
+        }
+        
+        if (isDragging)
+        {
+            entities[0].x = GetMousePosition().x;
+            entities[0].y = GetMousePosition().y;
+        }
+
         BeginDrawing();
             ClearBackground(BLACK);
             DrawLight();
